@@ -29,3 +29,19 @@
         )
     )
 )
+
+;; Function to repay a loan
+(define-public (repay-loan (amount uint))
+    (let ((borrowed-amount (map-get? borrowers tx-sender)))
+        (if borrowed-amount
+            (if (>= (unwrap-panic borrowed-amount) amount)
+                (begin
+                    (map-insert borrowers tx-sender (- (unwrap-panic borrowed-amount) amount))
+                    (ok amount)
+                )
+                (err u3) ; Repayment amount exceeds borrowed amount
+            )
+            (err u4) ; No active loan
+        )
+    )
+)
