@@ -13,3 +13,19 @@
         (ok amount)
     )
 )
+
+;; Function to borrow assets
+(define-public (borrow (amount uint))
+    (let ((collateral-amount (map-get? collateral tx-sender)))
+        (if collateral-amount
+            (if (>= (* (unwrap-panic collateral-amount) COLLATERAL_RATIO) amount)
+                (begin
+                    (map-insert borrowers tx-sender amount)
+                    (ok amount)
+                )
+                (err u1) ; Insufficient collateral
+            )
+            (err u2) ; No collateral deposited
+        )
+    )
+)
