@@ -61,3 +61,21 @@
         )
     )
 )
+
+;; Function to liquidate a loan
+(define-public (liquidate (borrower principal))
+    (let ((borrowed-amount (map-get? borrowers borrower))
+          (collateral-amount (map-get? collateral borrower)))
+        (if (and borrowed-amount collateral-amount)
+            (if (< (* (unwrap-panic collateral-amount) LIQUIDATION_THRESHOLD) (unwrap-panic borrowed-amount))
+                (begin
+                    (map-delete borrowers borrower)
+                    (map-delete collateral borrower)
+                    (ok (unwrap-panic borrowed-amount))
+                )
+                (err u7) ; Collateral value above liquidation threshold
+            )
+            (err u8) ; Borrower has no active loan
+        )
+    )
+)
