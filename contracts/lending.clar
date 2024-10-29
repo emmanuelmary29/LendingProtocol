@@ -79,3 +79,17 @@
         )
     )
 )
+
+;; Function to earn interest as a lender
+(define-public (earn-interest)
+    (let ((lender-amount (map-get? lenders tx-sender)))
+        (if lender-amount
+            (begin
+                ;; Calculate interest and update lender's balance
+                (map-insert lenders tx-sender (+ (unwrap-panic lender-amount) (calculate-interest (unwrap-panic lender-amount))))
+                (ok (unwrap-panic lender-amount))
+            )
+            (err u9) ; Lender has no deposited assets
+        )
+    )
+)
