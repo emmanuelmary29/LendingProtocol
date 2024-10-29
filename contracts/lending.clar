@@ -45,3 +45,19 @@
         )
     )
 )
+
+;; Function to withdraw collateral
+(define-public (withdraw-collateral (amount uint))
+    (let ((collateral-amount (map-get? collateral tx-sender)))
+        (if collateral-amount
+            (if (>= (unwrap-panic collateral-amount) amount)
+                (begin
+                    (map-insert collateral tx-sender (- (unwrap-panic collateral-amount) amount))
+                    (ok amount)
+                )
+                (err u5) ; Withdrawal amount exceeds deposited collateral
+            )
+            (err u6) ; No collateral deposited
+        )
+    )
+)
